@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grammar & Sentence Framing Assistant</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Grammar & Sentence Framing Assistant</h1>
+      <p>Enter your text below, and we'll help you with grammar corrections and sentence framing.</p>
+      <p><br/>
+        Kiruthik Varshan K R<br/>
+        7376222AL161<br/>
+        EXP 4<br/>
+        19.03.2025
+    </p>
+    </header>
+    <div class="content">
+      <textarea id="userText" placeholder="Type your sentence here..." rows="8"></textarea>
+      <button id="checkButton">Check Grammar</button>
+    </div>
+    <div class="results">
+      <h2>Results</h2>
+      <p><strong>Corrected Sentence:</strong> <span id="correctedSentence"></span></p>
+      <p><strong>Suggestions:</strong> <span id="suggestions"></span></p>
+    </div>
+    <footer>
+      <p>&copy; 2025 Grammar Assistant | Designed for Better Writing</p>
+    </footer>
+  </div>
+
+  <script>
+    document.getElementById('checkButton').addEventListener('click', function() {
+      const userText = document.getElementById('userText').value;
+      
+      if (userText.trim() === '') {
+        alert('Please enter some text to check.');
+        return;
+      }
+
+      // Send the text to Flask backend
+      fetch('/check', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'text=' + encodeURIComponent(userText),
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          alert(data.error);
+        } else {
+          document.querySelector('.results').style.display = 'block';
+          document.getElementById('correctedSentence').innerText = data.corrected_text;
+          document.getElementById('suggestions').innerText = data.suggestions.join('\n');
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    });
+  </script>
+</body>
+</html>
